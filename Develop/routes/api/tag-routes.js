@@ -3,9 +3,18 @@ const { Tag, Product, ProductTag } = require('../../models');
 
 // The `/api/tags` endpoint
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all tags
   // be sure to include its associated Product data
+  try {
+    const allTags = await Tag.findAll({
+      include: [{ model: Product, through: { attributes: [] } },]
+    })
+    res.status(200).json(allTags);
+  } catch (error) {
+    console.log(error)
+    res.status(400).json(error)
+  }
 });
 
 router.get('/:id', (req, res) => {
@@ -17,7 +26,9 @@ router.post('/', async (req, res) => {
   // create a new tag
   try {
     const newTag = await Tag.create(req.body)
-    if(!req.body.products?.length){
+    // added stipulation that if the tags were sent with an array of products, then
+    // product tags would be created for each of them
+    if (!req.body.products?.length) {
       return res.status(200).json(newTag)
     }
     let productTagData = req.body.products.map(product_id => {

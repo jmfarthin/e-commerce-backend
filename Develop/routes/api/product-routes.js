@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 // get one product
 router.get('/:id', async (req, res) => {
   // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+  // includes associated Category and Tag data
   try {
     const product = await Product.findByPk(req.params.id, {
       include: [{ model: Category }, { model: Tag, through: ProductTag }]
@@ -44,6 +44,7 @@ router.post('/', async (req, res) => {
   */
   try {
     const newProduct = await Product.create(req.body)
+    // adds new product tags if the product has tags
     if (req.body.tags.length) {
       const productTagsArr = req.body.tags.map(tag_id => {
         return {
@@ -51,6 +52,7 @@ router.post('/', async (req, res) => {
           tag_id
         }
       })
+      //returns new product and product tags
       const newProductTags = await ProductTag.bulkCreate(productTagsArr)
       return res.status(200).json({ newProduct, newProductTags })
     }
