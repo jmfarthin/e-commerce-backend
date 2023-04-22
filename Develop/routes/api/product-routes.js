@@ -51,8 +51,8 @@ router.post('/', async (req, res) => {
           tag_id
         }
       })
-      newProductTags = await ProductTag.bulkCreate(productTagsArr)
-      return res.status(200).json(newProductTags)
+      const newProductTags = await ProductTag.bulkCreate(productTagsArr)
+      return res.status(200).json({ newProduct, newProductTags })
     }
     res.status(200).json(newProduct)
   } catch (err) {
